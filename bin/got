@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+command_exists () {
+  type "$1" &> /dev/null;
+}
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+got_quotes=( \
+  "Valar morghulis." \
+  "Winter is coming." \
+  "HODOR." \
+  "The Lannisters send their regards." \
+  "You know nothing, Jon Snow." \
+  "SHAME! SHAME! SHAME!" \
+  "For the watch!" \
+)
+random_quote=${got_quotes[$RANDOM % ${#got_quotes[@]} ]}
+
+if [[ -L $CURRENT_DIR/got ]]; then
+  CURRENT_DIR=$(dirname $(readlink "$CURRENT_DIR/got"))
+fi
+
+DISPLAY= mplayer -really-quiet -vo caca $CURRENT_DIR/../video.mkv 1> /dev/stdout 2> /dev/null
+git $*
+exit_code=$?
+
+if command_exists cowsay ; then
+  cowsay "$random_quote"
+else
+  echo -e "\n$random_quote"
+fi
+
+exit $EXIT_CODE
